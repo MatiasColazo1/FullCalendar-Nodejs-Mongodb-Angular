@@ -10,20 +10,21 @@ export class CalendarioService {
 
   constructor(private http: HttpClient) { }
 
-  
-  getEvents(start: string, end: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/calendario/?start=${start}&end=${end}`);
+  createEventCalendar(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/calendario`, data);
   }
 
-  addEvent(eventData: Evento): Observable<Evento> {
-    return this.http.post<Evento>(`${this.apiUrl}`, eventData);
+  getAllEventsCalendar(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/calendario`);
+  }
+
+  updateEventCalendar(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/calendario`, data);
+  }
+
+  deleteEventCalendar(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/calendario/${id}`);
   }
 }
 
 
-export interface Evento {
-  _id?: string;
-  title: string;
-  start: Date;
-  end?: Date;
-}
