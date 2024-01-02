@@ -18,6 +18,7 @@ export class CalendarComponent implements OnInit {
     weekends: false,
     selectable: true,
     selectMirror: true,
+    dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this),
     plugins: [timeGridPlugin, dayGridPlugin, interactionPlugin],
   };
