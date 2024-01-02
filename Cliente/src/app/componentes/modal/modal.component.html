@@ -1,32 +1,26 @@
-<div *ngIf="open" class="modal-container">
-    <div class="modal-content">
-      <form>
-        <div class="form-group">
-          <label for="title">Adicionar título</label>
-          <input type="text" class="form-control" id="title" [(ngModel)]="title" placeholder="Ingrese un título">
-        </div>
-  
-        <div class="color-selection">
-          <label>Seleccione un color:</label>
-          <div *ngFor="let color of listColorsCard; let i = index">
-            <input type="radio" [id]="'color-' + i" name="cardColor" [(ngModel)]="cardColor.backgroundColor" [value]="color.backgroundColor">
-            <label [for]="'color-' + i" [ngStyle]="{'background-color': color.backgroundColor}"></label>
-          </div>
-        </div>
-  
-        <button type="button" class="btn btn-primary" (click)="isEditCard ? handleUpdatedEvent() : handleAddedEvent()">
-          {{ isEditCard ? 'Actualizar evento' : 'Adicionar evento' }}
-        </button>
-  
-        <div *ngIf="isEditCard">
-          <button type="button" class="btn btn-danger" (click)="handleDeleteEvent()">Excluir evento</button>
-        </div>
-      </form>
+<h2 mat-dialog-title>{{ data.isEdit ? 'Editar Evento' : 'Nuevo Evento' }}</h2>
+<mat-dialog-content class="mat-typography">
+  <form>
+    <mat-form-field appearance="fill">
+      <mat-label>Título del Evento</mat-label>
+      <input matInput [(ngModel)]="title" placeholder="Introduce un título">
+    </mat-form-field>
+
+    <div>
+      <label>Color del Evento:</label>
+      <div *ngFor="let color of listColorsCard">
+        <input type="radio" [value]="color" name="color" (change)="handleSelectCardColor(color)">
+        <span [style.background-color]="color.backgroundColor"
+              [style.color]="color.textColor">Ejemplo</span>
+      </div>
     </div>
-  </div>
-
-
-
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">Cancelar</button>
+  <button mat-button *ngIf="data.isEdit" (click)="handleDeleteEvent()">Eliminar</button>
+  <button mat-button (click)="handleAddedEvent()">{{ data.isEdit ? 'Actualizar' : 'Agregar' }}</button>
+</mat-dialog-actions>
 
 
 

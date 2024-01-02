@@ -9,7 +9,11 @@ import { CalendarComponent } from './componentes/calendar/calendar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ModalComponent } from './componentes/modal/modal.component';
 import { FormsModule } from '@angular/forms';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -22,7 +26,12 @@ import { FormsModule } from '@angular/forms';
     AppRoutingModule,
     FullCalendarModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

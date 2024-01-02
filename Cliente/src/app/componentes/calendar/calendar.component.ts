@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CalendarOptions } from '@fullcalendar/core';
+import { CalendarOptions, EventClickArg } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import { CalendarioService } from 'src/app/services/calendario.service';
-import { EventClickArg } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
+import { MatDialog } from '@angular/material/dialog';
+import { ModalComponent } from '../modal/modal.component';
+import { CalendarioService } from 'src/app/services/calendario.service';
 
 @Component({
   selector: 'app-calendar',
@@ -12,69 +13,39 @@ import timeGridPlugin from '@fullcalendar/timegrid';
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit {
-  modalOpen: boolean = false;
-selectedEvent: any; 
-  eventInfos: any; // Tipo según sea necesario
-  isEditCard: boolean = false;
-
   calendarOptions: CalendarOptions = {
     initialView: 'dayGridMonth',
     weekends: false,
     selectable: true,
     selectMirror: true,
-    eventClick: this.handleDateClick.bind(this),
+    eventClick: this.handleEventClick.bind(this),
     plugins: [timeGridPlugin, dayGridPlugin, interactionPlugin],
- 
   };
 
-
-  constructor(private calendarioService: CalendarioService) { }
-  
+  constructor(private calendarioService: CalendarioService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.calendarioService.getAllEventsCalendar().subscribe(data => {
-      // Asumiendo que 'data' es un array de eventos en el formato que FullCalendar espera
-      this.calendarOptions = { 
-        ...this.calendarOptions,
-        events: data
-      };
+      this.calendarOptions = { ...this.calendarOptions, events: data };
     });
   }
 
-  openModal() {
-    this.modalOpen = true;
-  }
-  
-  closeModal() {
-    this.modalOpen = false;
-  }
-
-
-  
- 
-
-  handleEventClick(clickInfo: EventClickArg) {
-    // Aquí puedes agregar tu lógica para manejar el evento de clic
-    this.eventInfos = clickInfo.event;
-    this.isEditCard = true; // Ajusta según sea necesario
-    this.openModal();
-  }
-  
-
-  handleDateClick(arg: any) {
-    // Aquí puedes agregar tu lógica para manejar la selección de fecha
-    this.eventInfos = { date: arg.dateStr }; // Ajusta según sea necesario
-    this.isEditCard = false;
-    this.openModal();
+  openModal(eventInfos: any, isEdit: boolean): void {
+    this.dialog.open(ModalComponent, {
+      width: '250px',
+      data: { eventInfos, isEdit }
+    });
   }
 
+  handleEventClick(clickInfo: EventClickArg): void {
+    this.openModal({ event: clickInfo.event }, true);
+  }
 
-  
+  handleDateClick(arg: any): void {
+    this.openModal({ date: arg.dateStr }, false);
+  }
 
-
-  //boton de alternal findes
-  toogleWeekends() {
-    this.calendarOptions.weekends = !this.calendarOptions.weekends
+  toogleWeekends(): void {
+    this.calendarOptions.weekends = !this.calendarOptions.weekends;
   }
 }
-

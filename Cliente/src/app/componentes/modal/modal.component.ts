@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalendarioService } from 'src/app/services/calendario.service';
 
 @Component({
@@ -6,78 +7,94 @@ import { CalendarioService } from 'src/app/services/calendario.service';
   templateUrl: './modal.component.html',
   styleUrls: ['./modal.component.css']
 })
-
-export class ModalComponent {
-  @Input() open: boolean | undefined;
-  @Input() eventInfos: any; // Define el tipo adecuado
-  @Input() isEditCard: boolean | undefined;
-  @Output() handleClose = new EventEmitter<void>();
-
+export class ModalComponent implements OnInit {
   title: string = '';
-  cardColor: any = { backgroundColor: '#039be5', textColor: '#ffffff' }; // Define el tipo adecuado
+  cardColor: { backgroundColor: string, textColor: string } = { backgroundColor: '#039be5', textColor: '#ffffff' };
+
 
   listColorsCard: ColorsCard[] = [
     { backgroundColor: '#039be5', textColor: '#ffffff' },
     // Agrega más colores según tus necesidades
   ];
 
-  constructor(private calendarioService: CalendarioService) { }
-  
-  async handleAddedEvent() {
-    try {
-      const eventCalendar = await this.calendarioService.createEventCalendar({
-        title: this.title || 'Sin título',
-        start: this.eventInfos.startStr,
-        end: this.eventInfos.endStr,
-        backgroundColor: this.cardColor.backgroundColor,
-        textColor: this.cardColor.textColor,
-      });
-  
-      // Aquí podrías actualizar el calendario con el nuevo evento
-      // Esto depende de cómo estés manejando el calendario en Angular
-  
-      this.handleClose.emit(); // Cierra el modal
-    } catch (error) {
-      console.error('Error al crear un evento', error);
-      // Manejo de errores, por ejemplo, mostrar un mensaje al usuario
-    }
-  }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    public dialogRef: MatDialogRef<ModalComponent>,
+    private calendarioService: CalendarioService
+  ) {}
 
 
-
-  async handleDeleteEvent() {
-    try {
-      await this.calendarioService.deleteEventCalendar(this.eventInfos.event.id);
-  
-      // Actualiza el calendario para reflejar la eliminación del evento
-  
-      this.handleClose.emit(); // Cierra el modal
-    } catch (error) {
-      console.error('Error al eliminar un evento', error);
-      // Manejo de errores
-    }
-  }
-
-  async handleUpdatedEvent() {
-    try {
-      const updatedEvent = {
-        id: this.eventInfos.event.id,
-        title: this.title || 'Sin título',
-        start: this.eventInfos.event.startStr,
-        end: this.eventInfos.event.endStr,
-        backgroundColor: this.cardColor.backgroundColor,
-        textColor: this.cardColor.textColor,
+  ngOnInit(): void {
+    if (this.data.isEdit) {
+      this.title = this.data.eventInfos?.event?.title;
+      this.cardColor = {
+        backgroundColor: this.data.eventInfos?.event?.backgroundColor,
+        textColor: this.data.eventInfos?.event?.textColor,
       };
-  
-      await this.calendarioService.updateEventCalendar(updatedEvent);
-  
-      // Actualiza el evento en el calendario
-  
-      this.handleClose.emit(); // Cierra el modal
-    } catch (error) {
-      console.error('Error al actualizar un evento', error);
-      // Manejo de errores
     }
+  }
+  
+
+  handleAddedEvent(): void {
+    if (!this.data.isEdit) {
+      // Crear nuevo evento
+      this.calendarioService.createEventCalendar({
+        title: this.title || 'Sin título',
+        start: this.data.eventInfos.startStr,
+        end: this.data.eventInfos.endStr,
+        backgroundColor: this.cardColor.backgroundColor,
+        textColor: this.cardColor.textColor,
+      }).subscribe({
+        next: (response) => {
+          // Maneja la respuesta
+          this.closeDialog();
+        },
+        error: (error) => {
+          // Maneja el error
+        }
+      });
+    } else {
+      // Actualizar evento existente
+      this.calendarioService.updateEventCalendar({
+        _id: this.data.eventInfos.event.id,
+        title: this.title || 'Sin título',
+        start: this.data.eventInfos.event.startStr,
+        end: this.data.eventInfos.event.endStr,
+        backgroundColor: this.cardColor.backgroundColor,
+        textColor: this.cardColor.textColor,
+      }).subscribe({
+        next: (response) => {
+          // Maneja la respuesta
+          this.closeDialog();
+        },
+        error: (error) => {
+          // Maneja el error
+        }
+      });
+    }
+  }
+
+  handleDeleteEvent(): void {
+    this.calendarioService.deleteEventCalendar(this.data.eventInfos.event.id).subscribe({
+      next: (response) => {
+        // Maneja la respuesta
+        this.closeDialog();
+      },
+      error: (error) => {
+        // Maneja el error
+      }
+    });
+  }
+
+  handleSelectCardColor(color: ColorsCard): void {
+    this.cardColor = {
+      backgroundColor: color.backgroundColor,
+      textColor: color.textColor,
+    };
+  }
+
+  closeDialog(): void {
+    this.dialogRef.close();
   }
 }
 

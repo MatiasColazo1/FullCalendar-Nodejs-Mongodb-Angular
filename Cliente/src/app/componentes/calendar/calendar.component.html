@@ -1,13 +1,13 @@
 <!-- En tu archivo calendar.component.html -->
-<app-modal
-  *ngIf="modalOpen"
-  [open]="modalOpen"
-  [eventInfos]="selectedEvent"
-  [isEditCard]="isEditCard" 
-  (handleClose)="closeModal()">
-</app-modal>
+
 
 <button (click)="toogleWeekends()">Toggle Weekends</button>
-<full-calendar [options]="calendarOptions">
+<full-calendar [options]="calendarOptions" data-bs-toggle="modal" data-bs-target="#exampleModal">
   <!-- Contenido del calendario aquí -->
 </full-calendar>
+
+
+
+
+
+
