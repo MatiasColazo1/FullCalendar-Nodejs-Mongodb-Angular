@@ -60,17 +60,17 @@ export class CalendarComponent implements OnInit {
 
   
   openAddEventModal(startDate: Date, endDate: Date): void {
+    const eventInfos = {
+      startStr: startDate.toISOString(),
+      endStr: endDate.toISOString()
+    };
+  
     const dialogRef = this.dialog.open(ModalComponent, {
       width: '250px',
-      data: {
-        startDate,
-        endDate
-      }
+      data: { eventInfos, isEdit: false }
     });
-
-    // Puedes suscribirte al evento 'afterClosed' para realizar acciones después de que el modal se cierra
+  
     dialogRef.afterClosed().subscribe(result => {
-      // Aquí puedes manejar la respuesta del modal, si es necesario
       console.log('Modal cerrado', result);
     });
   }
