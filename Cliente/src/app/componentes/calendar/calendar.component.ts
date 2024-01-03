@@ -26,9 +26,11 @@ export class CalendarComponent implements OnInit {
   constructor(private calendarioService: CalendarioService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
+    
     this.calendarioService.getAllEventsCalendar().subscribe(data => {
       this.calendarOptions = { ...this.calendarOptions, events: data };
     });
+    
   }
 
   openModal(eventInfos: any, isEdit: boolean): void {
@@ -39,11 +41,38 @@ export class CalendarComponent implements OnInit {
   }
 
   handleEventClick(clickInfo: EventClickArg): void {
-    this.openModal({ event: clickInfo.event }, true);
+    let eventInfo = {
+      event: clickInfo.event,
+      start: clickInfo.event.start, // Fecha de inicio
+      end: clickInfo.event.end // Fecha de finalización
+    };
+  
+    this.openModal(eventInfo, true);
   }
 
   handleDateClick(arg: any): void {
-    this.openModal({ date: arg.dateStr }, false);
+    const startDate = new Date(arg.dateStr);
+    const endDate = new Date(startDate);
+    endDate.setHours(startDate.getHours() + 1);
+   
+    this.openAddEventModal(startDate, endDate);
+  }
+
+  
+  openAddEventModal(startDate: Date, endDate: Date): void {
+    const dialogRef = this.dialog.open(ModalComponent, {
+      width: '250px',
+      data: {
+        startDate,
+        endDate
+      }
+    });
+
+    // Puedes suscribirte al evento 'afterClosed' para realizar acciones después de que el modal se cierra
+    dialogRef.afterClosed().subscribe(result => {
+      // Aquí puedes manejar la respuesta del modal, si es necesario
+      console.log('Modal cerrado', result);
+    });
   }
 
   toogleWeekends(): void {
