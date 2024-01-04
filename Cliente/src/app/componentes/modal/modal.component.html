@@ -8,16 +8,14 @@
 
     <div>
       <label>Color del Evento:</label>
-      <div *ngFor="let color of listColorsCard">
-        <input type="radio" [value]="color" name="color" (change)="handleSelectCardColor(color)">
-        <span [style.background-color]="color.backgroundColor"
-              [style.color]="color.textColor">Ejemplo</span>
+      <div class="color-container">
+        <div *ngFor="let color of listColorsCard" class="color-circle" [style.background-color]="color.backgroundColor"
+              (click)="handleSelectCardColor(color)"></div>
       </div>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <button mat-button (click)="closeDialog()">Cancelar</button>
   <button mat-button *ngIf="data.isEdit" (click)="handleDeleteEvent()">Eliminar</button>
   <button mat-button (click)="handleAddedEvent()">{{ data.isEdit ? 'Actualizar' : 'Agregar' }}</button>
 </mat-dialog-actions>
