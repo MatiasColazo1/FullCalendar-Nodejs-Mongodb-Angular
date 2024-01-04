@@ -21,8 +21,11 @@ export class ModalComponent implements OnInit {
   event: EventoCalendario | undefined;
 
   listColorsCard: ColorsCard[] = [
-    { backgroundColor: '#039be5', textColor: '#ffffff' },
-    // Agrega más colores según tus necesidades
+    { backgroundColor: 'rgb(213, 0, 0)', textColor: '#fff' },
+    { backgroundColor: 'rgb(51, 182, 121)', textColor: '#fff' },
+    { backgroundColor: 'rgb(246, 191, 38)', textColor: '#fff' },
+    { backgroundColor: 'rgb(3, 155, 229)', textColor: '#fff' },
+    { backgroundColor: 'rgb(97, 97, 97)', textColor: '#fff' },
   ];
 
   constructor(
@@ -64,8 +67,8 @@ export class ModalComponent implements OnInit {
       });
     } else {
       // Actualizar evento existente
-      this.calendarioService.updateEventCalendar({
-        id: this.data.eventInfos.event._id,
+      this.calendarioService.updateEventCalendar({  
+        _id: this.data.eventInfos.event.extendedProps['_id'],
         title: this.title || 'Sin título',
         start: this.data.eventInfos.event.startStr,
         end: this.data.eventInfos.event.endStr,
@@ -73,14 +76,14 @@ export class ModalComponent implements OnInit {
         textColor: this.cardColor.textColor,
       }).subscribe({
         next: (response) => {
-          // Maneja la respuesta
+          console.log('Respuesta del servidor:', response);
           this.closeDialog();
         },
         
         error: (error) => {
-          // Maneja el error
+          console.error('Error en la solicitud:', error);
         }
-      });
+      }); 
       console.log(this.data);
     }
   }

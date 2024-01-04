@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -7,6 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class CalendarioService {
   private apiUrl = 'http://localhost:3000/api';
+
 
   constructor(private http: HttpClient) { }
 
@@ -26,4 +27,3 @@ export class CalendarioService {
     return this.http.delete(`${this.apiUrl}/calendario/${id}`);
   }
 }
-
