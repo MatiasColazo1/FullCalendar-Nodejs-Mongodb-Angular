@@ -42,6 +42,7 @@ export class CalendarComponent implements OnInit {
 
   handleEventClick(clickInfo: EventClickArg): void {
     let eventInfo = {
+      id: clickInfo.event.extendedProps['_id'],
       event: clickInfo.event,
       start: clickInfo.event.start, // Fecha de inicio
       end: clickInfo.event.end // Fecha de finalización

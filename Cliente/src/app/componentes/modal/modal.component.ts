@@ -2,6 +2,14 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CalendarioService } from 'src/app/services/calendario.service';
 
+interface EventoCalendario {
+  id: string;
+  title: string;
+  start: Date;
+  end: Date;
+  // otras propiedades...
+}
+
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
@@ -10,7 +18,7 @@ import { CalendarioService } from 'src/app/services/calendario.service';
 export class ModalComponent implements OnInit {
   title: string = '';
   cardColor: { backgroundColor: string, textColor: string } = { backgroundColor: '#039be5', textColor: '#ffffff' };
-
+  event: EventoCalendario | undefined;
 
   listColorsCard: ColorsCard[] = [
     { backgroundColor: '#039be5', textColor: '#ffffff' },
@@ -21,10 +29,11 @@ export class ModalComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ModalComponent>,
     private calendarioService: CalendarioService
-  ) {}
+  ) { }
 
 
   ngOnInit(): void {
+    console.log(this.data.eventInfos);
     if (this.data.isEdit) {
       this.title = this.data.eventInfos?.event?.title;
       this.cardColor = {
@@ -56,7 +65,7 @@ export class ModalComponent implements OnInit {
     } else {
       // Actualizar evento existente
       this.calendarioService.updateEventCalendar({
-        _id: this.data.eventInfos.event.id,
+        id: this.data.eventInfos.event._id,
         title: this.title || 'Sin título',
         start: this.data.eventInfos.event.startStr,
         end: this.data.eventInfos.event.endStr,
@@ -67,24 +76,36 @@ export class ModalComponent implements OnInit {
           // Maneja la respuesta
           this.closeDialog();
         },
+        
         error: (error) => {
           // Maneja el error
         }
       });
+      console.log(this.data);
     }
   }
 
   handleDeleteEvent(): void {
-    this.calendarioService.deleteEventCalendar(this.data.eventInfos.event.id).subscribe({
-      next: (response) => {
-        // Maneja la respuesta
-        this.closeDialog();
-      },
-      error: (error) => {
-        // Maneja el error
-      }
-    });
+    console.log("Datos del evento:", this.data.eventInfos);
+    const eventId = this.data.eventInfos.id;
+    console.log("ID recibido:", eventId);
+  
+    if (eventId) {
+      this.calendarioService.deleteEventCalendar(eventId).subscribe({
+        next: () => {
+          this.closeDialog();
+        },
+        error: (error) => {
+          console.error('Error al eliminar el evento:', error);
+        }
+      });
+    } else {
+      console.error('El ID del evento es undefined');
+    }
   }
+
+
+
 
   handleSelectCardColor(color: ColorsCard): void {
     this.cardColor = {
